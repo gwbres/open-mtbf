@@ -1,5 +1,7 @@
-from lib.part import Part
-class Memory (Part):
+import math
+from lib.part.digital import DigitalPart
+
+class Memory (DigitalPart):
     def __init__ (self, *args, **kwargs):
         """ 
         Builds a new Memory part (Read Only Memory (ROM)), Programmable Memmory (PROM),
@@ -33,9 +35,19 @@ class Memory (Part):
 
     def set_size (self, n):
         """ 
-        Assigns internal number of bytes 
+        Assigns internal memory size 
         """
-        self.size = n
+        if type(n) == str:
+        elif type(n) == int:
+            self.size = n
+
+    def Sizes():
+        """
+        Returns memory size description
+        """
+        for i in range (40):
+            bits = math.pow(2,i)
+            if bits
 
     def failure_rate (self, duration):
         """ 
@@ -44,6 +56,36 @@ class Memory (Part):
         (C1, C2) = self.C1C2()
         pi = self.pi
         (C1 * pi["T"] + C2 * pi["E"] + Memory.LambdaCycle()) * pi["Q"] * pi["L"] /pow(10,6) /duration.hours()
+
+    def LambdaCycleA (cycle):
+        """
+        Returns (A1, A2) factors for Lambda_cyc equation, for given amount of 
+        Write (programming) cycles
+        """
+        return (Memory.LambdaCycleA1(), Memory.LambdaCycleA2())
+
+    def LambdaCycleA1 (cycle):
+        """
+        Returns A1 factor for Lambda_cyc equation, for given amount of 
+        Write (programming) cycles
+        """
+        return (6.817 * cycle /pow(10,6), 
+
+    def LambdaCycleA2 (cycle):
+        """
+        Returns A2 factor for lambda_cyc equation, for given amount of programming (Write) cycles
+        """
+        if cycle <= 300000:
+            return 0.0
+        elif cycle <= 400000:
+            return 1.1
+        elif cycle <= 500000:
+            return 2.3
+
+    def LambdaCycle (cycle, Q=1.0, ECC=None):
+        Memory.LambdaCycleA1(cycle) 
+            * Memory.LambdaCycleB1(cycle) + 
+                (Memory.LambdaCycleA2(cycle) + Memory.LambdaCycleB2(cycle)) / Q
 
     def C1C2 (self):
         """ 

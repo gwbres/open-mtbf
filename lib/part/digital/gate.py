@@ -1,6 +1,6 @@
-from lib.part import Part
+from lib.part.digital import DigitalPart
 
-class Gate (Part):
+class Gate (DigitalPart):
     def __init__ (self, *args, **kwargs):
         """ 
         Builds a new Gate part (transistor, digital microcircuit).
@@ -77,6 +77,7 @@ class Gate (Part):
                 elif i == len(keys)-1: # largest pop was reached
                     c[k] = t[n]
         return c
+
 
     def Categories():
         return {

@@ -1,3 +1,5 @@
+import numpy as np
+
 class Part:
     def __init__ (self, *args, **kwargs):
         """ builds a new \"Part\" with given base failure rate \"base-fr\"
@@ -19,3 +21,22 @@ class Part:
 
     def Categories (self):
         return {"blackbox": None}
+
+    def is_active (self):
+        return False
+
+    def weibull (self, t): 
+        """
+        Returns weibull factor for self given time point or axis
+        """
+        nu = 1.0 #TODO
+        beta = self.failure_rate()
+        A = beta / nu
+        B = t / nu
+        return A * np.power(B, beta-1) * np.exp(np.power(B, beta))
+
+    def reliability (self, t):
+        """
+        Returns part reliability for given time point or axis
+        """
+        return np.exp(-self.failure_rate() * t)
