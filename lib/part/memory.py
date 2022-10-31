@@ -1,14 +1,15 @@
 from lib.part import Part
-class Gate (Part):
+class Memory (Part):
     def __init__ (self, *args, **kwargs):
         """ 
-        Builds a new Gate part (transistor, digital microcircuit).
-        kind: ["bipolar", "mos"] for modelization
-        technology: ["digital", "linear", "pla", "pal"] for modelization
-        gates: number of logical gates or transistors in the circuit
+        Builds a new Memory part (Read Only Memory (ROM)), Programmable Memmory (PROM),
+        Flash, Static RAM (SRAM) or Dynamic RAM (DRAM).
+        kind: ["MOS", "Bipolar"] for modelization
+        technology: ["ROM", "(EE)PROM", "DRAM (MOS & BIMOS)", "",] for modelization
+        size: memory size (bytes)
         """
         super().__init__(*args, **kwargs)
-        self.set_gates(int(kwargs.get("gates", 1)))
+        self.set_size(int(kwargs.get("size", "16K")))
         self.set_kind(kwargs.get("kind", "bipolar"))
         self.set_technology(kwargs.get("technology", "digital"))
     
@@ -16,26 +17,25 @@ class Gate (Part):
         """ 
         Sets internal kind of gate 
         """
-        categories = Gate.Categories()
+        categories = Memory.Categories()
         if not kind in categories:
-            raise ValueError("`{}` is not a valid Gate object".format(kind))
+            raise ValueError("`{}` is not a valid Memory object".format(kind))
         self.kind = kind
 
     def set_technology (self, technology):
         """ 
         Sets internal technology 
         """
-        technologies = Gate.Categories()[self.kind]
-        print(technologies)
+        technologies = Memory.Categories()[self.kind]
         if not technology in technologies: 
-            raise ValueError("`{}` is not a valid {} Gate technology".format(technology, self.kind))
+            raise ValueError("`{}` is not a valid {} Memory technology".format(technology, self.kind))
         self.technology = technology
 
-    def set_gates (self, n):
+    def set_size (self, n):
         """ 
-        Assigns internal number of gates 
+        Assigns internal number of bytes 
         """
-        self.nb_gates = n
+        self.size = n
 
     def failure_rate (self, duration):
         """ 
@@ -43,7 +43,7 @@ class Gate (Part):
         """
         (C1, C2) = self.C1C2()
         pi = self.pi
-        (C1 * pi["T"] + C2 * pi["E"]) * pi["Q"] * pi["L"] /pow(10,6) /duration.hours()
+        (C1 * pi["T"] + C2 * pi["E"] + Memory.LambdaCycle()) * pi["Q"] * pi["L"] /pow(10,6) /duration.hours()
 
     def C1C2 (self):
         """ 
@@ -51,7 +51,7 @@ class Gate (Part):
         "C1" is die complexity failure coefficient.
         "C2" is [...]
         """
-        table = Gate.Table()
+        table = Memory.Table()
         if not self.kind in table:
             raise RuntimeError("`{}` is not a supported kind of gate".format(self.kind))
         table = table[self.kind]

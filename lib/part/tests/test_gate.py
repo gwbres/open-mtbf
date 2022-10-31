@@ -1,4 +1,4 @@
-from lib.gate import Gate
+from lib.part.gate import Gate
 
 def test_bipolar_transistor():
     part = Gate(kind="Bipolar", technology="Digital", nb_gates=10)
